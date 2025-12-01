@@ -1,4 +1,4 @@
-# auto_withdraw_render_ready.py
+# ✅ auto_withdraw_render_ready.py
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
@@ -23,7 +23,7 @@ CHAT_ID = "969062037"
 ACCOUNTS = [
     {"account_number": "002821717790044", "ifsc_code": "JIOP0000001"},
     {"account_number": "033325229770186", "ifsc_code": "NESF0000096"},
-    # Add remaining accounts
+    # Add remaining accounts here
 ]
 
 START_TIME = "09:33:00"
@@ -33,6 +33,7 @@ GAP_SECONDS = 35
 logging.basicConfig(filename="withdraw_script.log", level=logging.INFO,
                     format="%(asctime)s [%(levelname)s] %(message)s")
 
+# --- Telegram helper ---
 def send_telegram(msg):
     try:
         requests.post(f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage",
@@ -41,6 +42,7 @@ def send_telegram(msg):
     except Exception as e:
         logging.error(f"Telegram send failed: {e}")
 
+# --- Close popups ---
 def remove_all_popups(driver):
     try:
         for btn in driver.find_elements(By.XPATH, "//button[contains(text(),'Got it') or contains(text(),'Close')]"):
@@ -50,6 +52,7 @@ def remove_all_popups(driver):
     except:
         pass
 
+# --- Click with retries ---
 def click_with_retry(driver, wait):
     for _ in range(10):
         try:
@@ -64,6 +67,7 @@ def click_with_retry(driver, wait):
             time.sleep(1)
     return False
 
+# --- Withdraw function ---
 def perform_withdraw(driver, wait, acc):
     acc_no = acc["account_number"]
     ifsc = acc["ifsc_code"]
@@ -94,9 +98,10 @@ def perform_withdraw(driver, wait, acc):
         send_telegram(f"⚠️ Withdraw failed for {acc_no}: {e}")
         logging.error(f"Withdraw failed {acc_no}: {e}")
 
+# --- Login once ---
 def login_once():
     options = Options()
-    options.add_argument("--headless=new")  # Render compatible
+    options.add_argument("--headless=new")  # Headless for Render
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--disable-gpu")
@@ -116,6 +121,7 @@ def login_once():
     send_telegram("🔓 Logged in successfully")
     return driver, wait
 
+# --- Schedule all withdraws ---
 def schedule_withdraws():
     driver, wait = login_once()
     send_telegram("🟢 Script Started")
@@ -131,5 +137,6 @@ def schedule_withdraws():
         schedule.run_pending()
         time.sleep(1)
 
+# --- Main entry ---
 if __name__ == "__main__":
     schedule_withdraws()
