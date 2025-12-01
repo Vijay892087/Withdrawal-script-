@@ -132,3 +132,4 @@ def schedule_withdraws():
         time.sleep(1)
 
 if __name__ == "__main__":
+    schedule_withdraws()
