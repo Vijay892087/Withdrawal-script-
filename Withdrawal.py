@@ -26,7 +26,7 @@ ACCOUNTS = [
     # Add remaining accounts here
 ]
 
-START_TIME = "09:33:00"
+START_TIME = "09:55:00"
 GAP_SECONDS = 35
 
 # --- Logging ---
